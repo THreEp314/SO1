@@ -12,7 +12,7 @@ public class Main {
 		while (resposta != 3){
 			resposta = Integer.parseInt(JOptionPane.showInputDialog(null,"Digite: IP-1 / Ping-2 / Finalizar-3"));
 			if(resposta == 1) {
-			pc.IP();
+				pc.IP();
 			}else
 				if(resposta==2){
 					pc.ping();
