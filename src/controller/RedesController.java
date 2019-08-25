@@ -25,20 +25,48 @@ public class RedesController {
 			InputStreamReader leitor = new InputStreamReader(fluxo);
 			BufferedReader buffer = new BufferedReader(leitor);
 			String linha = buffer.readLine();
-			while (linha != null) {
-				if(linha.contains("Ethernet")){
-					System.out.println(linha);
-					linha = buffer.readLine();
-					while (!linha.contains("Adaptador")){
-						if (linha.contains("IPv4")) {
-							System.out.println(linha);		
+			if(Processo == "ipconfig"){
+				while (linha != null) {
+					if(linha.contains("Ethernet")){
+						System.out.println(linha);
+						linha = buffer.readLine();
+						while (!linha.contains("Adaptador")){
+							if (linha.contains("IPv4")) {
+								System.out.println(linha);		
+							}
+							linha = buffer.readLine();
 						}
+					} else {
 						linha = buffer.readLine();
 					}
-				} else {
-					linha = buffer.readLine();
 				}
-			}
+			}else
+				if(Processo == "ifconfig"){
+					while (linha != null) {
+						if(linha.contains("flags")){
+							linha = linha.trim();
+							String[] vetorNomeIP = linha.split("=");
+							linha = buffer.readLine();
+								if(linha.contains("inet") && !linha.contains("inet6")){
+									linha = linha.trim();
+									String[] vetorIP = linha.split(" ");
+									linha = buffer.readLine();
+									while (!linha.contains("TX errors")){
+										if(linha.contains("Ethernet")){
+											System.out.println(vetorNomeIP[1]);
+											System.out.println(vetorIP[0] + " " + vetorIP[1]);
+										}
+										linha = buffer.readLine();
+									}
+								}
+								else{
+									linha = buffer.readLine();
+								}
+						}else{
+							linha = buffer.readLine();
+						}
+					}
+			} 
 			buffer.close();
 			leitor.close();
 			fluxo.close();
@@ -59,19 +87,36 @@ public class RedesController {
 			InputStreamReader leitor = new InputStreamReader(fluxo);
 			BufferedReader buffer = new BufferedReader(leitor);
 			String linha = buffer.readLine();
-			while (linha != null) {
-				if(linha.contains("Resposta")){
-					linha = linha.trim();
-					String[] vetor = linha.split(" ");
-					System.out.println(vetor[4]);		
-				}else 
-					if(linha.contains("milissegundos")){
-						linha = buffer.readLine();
+			if(os.contains("Windows")){
+				while (linha != null) {
+					if(linha.contains("Resposta")){
 						linha = linha.trim();
-						String[] vetor = linha.split(",");
-						System.out.println(vetor[2].trim());
+						String[] vetorPing = linha.split(" ");
+						System.out.println(vetorPing[4]);		
+					}else 
+						if(linha.contains("milissegundos")){
+							linha = buffer.readLine();
+							linha = linha.trim();
+							String[] vetorPing = linha.split(",");
+							System.out.println(vetorPing[2].trim());
+						}
+					linha = buffer.readLine();
+				}
+			}else
+				if(os.contains("Linux")){
+					while (linha != null) {
+						if(linha.contains("icmp")){
+							linha = linha.trim();
+							String[] vetorPing = linha.split(" ");
+							System.out.println(vetorPing[7]);
+						}else
+							if(linha.contains("rtt")){
+								linha = linha.trim();
+								String[] vetorPing = linha.split("/");
+								System.out.println("Média " + vetorPing[4]);
+							}
+						linha = buffer.readLine();
 					}
-				linha = buffer.readLine();
 			}
 		}catch (IOException e) {
 			e.printStackTrace();
